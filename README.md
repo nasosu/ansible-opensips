@@ -1,5 +1,5 @@
 # ansible-opensips
-
+```
 export PATH=$PATH:/usr/local/sbin
 echo "export PATH=$PATH:/usr/local/sbin" > /root/.bashrc
 apt install git python-pip -y
@@ -10,3 +10,4 @@ mkdir /etc/ansible
 mkdir /root/.ansible
 mkdir /root/.ansible/roles
 cp -r ansible-opensips/roles /root/.ansible
+```
