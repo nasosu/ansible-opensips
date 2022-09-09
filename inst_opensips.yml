@@ -1,0 +1,13 @@
+---
+
+ - name: talk to all hosts just so we can learn about them
+   hosts: testone
+   roles: 
+     - geerlingguy.mysql
+     - razvancrainea.opensips
+     - razvancrainea.opensips_cli
+     - razvancrainea.opensips_cp
+
+   vars:
+     opensips_modules: opensips-dialplan-module,opensips-http-modules,opensips-mysql-module
+     opensips_version: 3.2

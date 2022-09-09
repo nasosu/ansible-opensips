@@ -1,0 +1,46 @@
+---
+
+ - name: talk to all hosts just so we can learn about them
+   hosts: newone
+   tasks:
+     - name: Classify hosts depending on their OS distribution
+       group_by:
+         key: os_{{ ansible_facts['distribution'] }}
+
+ # now just on the CentOS hosts...
+
+ - hosts: os_CentOS
+   gather_facts: False
+   tasks:
+     - name: test task 
+       command: whoami
+# tasks that only happen on CentOS go in this play
+
+ - hosts: os_Debian
+   gather_facts: False
+   tasks:
+    - name: update packages and reboot
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: install kernels
+      apt:
+        name: linux-headers-{{ ansible_facts['kernel'] }},linux-image-{{ ansible_facts['kernel'] }}
+
+    - name: reboot PC after upgrade
+      reboot:
+
+    - name: install packages 
+      apt:
+        name: devscripts,git,curl,libmosquitto-dev,libwebsockets-dev,python3-websockets,apt-utils,dpkg-dev,debhelper,iptables,iptables-dev,libcurl4-openssl-dev,libglib2.0-dev,libavcodec-extra,libhiredis-dev,libpcre3-dev,libssl-dev,libxmlrpc-core-c3-dev,markdown,zlib1g-dev,module-assistant,dkms,gettext,default-libmysqlclient-dev,gperf,libavcodec-dev,libavfilter-dev,libavformat-dev,libavutil-dev,libbencode-perl,libcrypt-openssl-rsa-perl,libcrypt-rijndael-perl,libdigest-crc-perl,libdigest-hmac-perl,libevent-dev,libio-multiplex-perl,libio-socket-inet6-perl,libjson-glib-dev,libnet-interface-perl,libpcap0.8-dev,libsocket6-perl,libswresample-dev,libsystemd-dev,nfs-common,netcat-openbsd,netcat,unzip,libconfig-tiny-perl,libspandsp-dev*
+        state: latest
+
+    - name: Git get installation script 
+      git:
+        repo: 'https://bitbucket.org/yooxy/rtpengine-debian-10-install.git'
+        dest: /root/distr/rtpengine_install
+
+    - name: run installation and compilation script 
+      shell: sh /root/distr/rtpengine_install/rtpengine.sh > install.log
+

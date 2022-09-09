@@ -1,0 +1,69 @@
+<?php
+/*
+ * Copyright (C) 2011 OpenSIPS Project
+ *
+ * This file is part of opensips-cp, a free Web Control Panel Application for 
+ * OpenSIPS SIP server.
+ *
+ * opensips-cp is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * opensips-cp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+
+### List with all the available modules - you can enable and disable module from here
+
+$config_modules 	= array (
+	"admin"				=> array (
+		"enabled"       => true,
+		"settings"      => true,
+		"name"          => "Admin",
+		"modules"       => array (
+			"list_admins"	=> array (
+				"enabled"	=> true,
+				"name"		=> "Admins"
+				),
+			),
+		),
+	{% set dict1=opensips_cp_modules | d(default_opensips_cp_modules) %}
+	{%- for module1Key in dict1 %}
+
+	"{{ module1Key }}"	=> array (
+		"enabled"       => true,
+		"name"          => "{{ dict1[module1Key]['name'] | d(default_opensips_cp_modules[module1Key]['name']) }}",
+		"icon"          => "{{ dict1[module1Key]['icon'] | d(default_opensips_cp_modules[module1Key]['name']) }}",
+		"modules"       => array (
+			{%- set dict2=dict1[module1Key]['modules'] %}
+			{%- for module2Key in dict2 %}
+
+			"{{ module2Key }}"   => array (
+				"enabled"         => true,
+				{% if dict2[module2Key] is mapping -%}
+				{% if dict2[module2Key].path is defined -%}
+				"path"            => "{{ dict2[module2Key].path }}",
+				{% endif -%}
+				"name"            => "{{ dict2[module2Key].name | d(default_opensips_cp_modules[module1Key]['modules'][module2Key]) }}"
+				{% elif not dict2[module2Key] -%}
+				"name"            => "{{ default_opensips_cp_modules[module1Key]['modules'][module2Key] | d(module2Key)}}"
+				{% else -%}
+				"name"            => "{{ dict2[module2Key] | d(module2Key) }}"
+				{% endif -%}
+				),{% endfor %}
+
+			),
+		),
+{% endfor %}
+
+);
+
+?>
